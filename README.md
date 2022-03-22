@@ -1,5 +1,19 @@
 # torq-devops-demo
 
+## How to create tags
+
+via CLI
+
+```
+git tag release/2022-03-22 [commit sha]
+git push --tags release/2022-03-22
+```
+
+via GitHub web interface
+
+![](https://i.imgur.com/8odB0sI.png)
+
+
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
