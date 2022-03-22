@@ -6,7 +6,7 @@ via CLI
 
 ```
 git tag release/2022-03-22 [commit sha]
-git push --tags release/2022-03-22
+git push origin --tags release/2022-03-22
 ```
 
 via GitHub web interface
