@@ -10,8 +10,9 @@ on:
     tags:
       - 'v*'
   pull_request:
-    - develop
-    - main
+    branches:
+      - develop
+      - main
   # workflow_dispatch:
   #   inputs:
   #     deploy:
