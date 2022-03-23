@@ -4,16 +4,19 @@
 name: Node.js CI
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       deploy:
         description: 'Execute the build?'
         required: true
         default: 'yes'
-      tags:
-        description: "Tag to be deploy"
-        required: true
-        type: string
+      # tags:
+      #   description: "Tag to be deploy"
+      #   required: true
+      #   type: string
 
 jobs:
   dev:
