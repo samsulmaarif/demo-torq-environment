@@ -26,7 +26,7 @@ on:
 
 jobs:
   dev:
-    name: Build on branch ${{ github.ref_name }}
+    name: Build on branch develop
     if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +51,7 @@ jobs:
         npm run lint
 
   staging:
-    name: Build on branch ${{ github.ref_name }}
+    name: Build on branch staging
     if: ${{ github.event_name == 'push' && github.ref_name == 'staging' }}
     runs-on: ubuntu-latest
     steps:
