@@ -6,8 +6,8 @@
     </div>
     <div class="from-group mb-2">
       <input type="password" class="form-control" name="password" v-model="input.password" placeholder="Password" />
-    </div> 
-    <button type="button" class="btn btn-primary" v-on:click="login()">Login</button>
+    </div>
+    <button type="button" class="btn btn-primary btn-success" v-on:click="login()">Login</button>
   </form>
 
 </template>

@@ -13,6 +13,7 @@ defineProps({
     <h3>
 Install Vue 3 with Bootstrap 5.
     </h3>
+  </div>
 </template>
 
 <style scoped>
