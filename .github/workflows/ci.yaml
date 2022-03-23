@@ -4,22 +4,20 @@
 name: Node.js CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       deploy:
-        description: 'Execute the build (from branch ${{ github.ref_name }})?'
+        description: 'Execute the build?'
         required: true
         default: 'yes'
+      tags:
+        description: "Tag to be deploy"
+        required: true
+        type: string
 
 jobs:
   dev:
-    name: Build on dev branch
+    name: Build on branch ${{ github.ref_name }}
     if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +44,7 @@ jobs:
         npm run lint
 
   staging:
-    name: Build on dev branch
+    name: Build on branch ${{ github.ref_name }}
     if: ${{ github.event_name == 'push' && github.ref_name == 'staging' }}
     runs-on: ubuntu-latest
     steps:
@@ -71,3 +69,16 @@ jobs:
         npm ci
         npm run build --if-present
         npm run lint
+
+
+  release:
+    name: Build only on tags
+    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' && github.ref_name == 'v*' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
