@@ -9,7 +9,8 @@ on:
       - develop
     tags:
       - 'v*'
-    pull_request:
+  pull_request:
+    branches:
       - develop
       - main
   # workflow_dispatch:
