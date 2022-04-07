@@ -4,11 +4,11 @@
 name: Node.js CI
 
 on:
-  push:
-    branches:
-      - develop
-    tags:
-      - 'v*'
+  # push:
+  #   branches:
+  #     - develop
+  #   tags:
+  #     - 'v*'
   pull_request:
     branches:
       - develop
@@ -27,6 +27,7 @@ on:
 jobs:
   dev:
     name: Build on branch develop
+    environment: development
     if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
     steps:
@@ -46,12 +47,13 @@ jobs:
         restore-keys: ${{ runner.os }}-node-modules
     - name: Run the test
       run: |
-        npm ci
-        npm run build --if-present
-        npm run lint
+        echo "Development Demo Only"
+        echo -e "{\n  \"environmentKey\"\: \"${{ github.ref_name }}\"\n}"
 
   staging:
     name: Build on branch staging
+    environment: staging
+    needs: [dev]
     if: ${{ github.event_name == 'push' && github.ref_name == 'staging' }}
     runs-on: ubuntu-latest
     steps:
@@ -73,14 +75,12 @@ jobs:
 
     - name: Run the test
       run: |
-        npm ci
-        npm run build --if-present
-        npm run lint
+        echo "Staging"
 
 
   release:
     name: Build only on tags
-    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' && github.ref_name == 'v*' }}
+    if: ${{ github.ref_type == 'tag' && github.ref_name == 'v*' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
