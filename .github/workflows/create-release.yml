@@ -11,7 +11,7 @@ on:
 jobs:
   create-tag:
     name: Create tag
-    if: ${{ github.ref_name == 'develop' && github.ref_type == 'branch' }}
+    if: ${{ github.ref_name == 'main' && github.ref_type == 'branch' }}
     runs-on: ubuntu-latest
     steps:
 
