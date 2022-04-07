@@ -1,0 +1,65 @@
+name: create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Enter version number you want to create. Ex: v2022.2.1.0'
+        required: true
+        type: sting
+
+jobs:
+  create-tag:
+    name: Create tag
+    if: ${{ github.ref_name == 'develop' && github.ref_type == 'branch' }}
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      # with:
+      #   fetch-depth: 50
+
+    - name: Create and push tag
+      run: |
+        git tag ${{ github.event.inputs.tags }}
+        git push origin HEAD:refs/tags/${{ github.event.inputs.tags }} --force
+
+  create-release:
+    name: Create Release
+    needs: [create-tag]
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.tags }}
+
+    - name: Create Release with Changelog
+      id: create_release
+      uses: fregante/release-with-changelog@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.inputs.tags }}
+        title: ${{ github.event.inputs.tags }}
+        exclude: '^Merge'
+        commit-template: '- {title} ← {hash}'
+        template: |
+          ### Changelog
+
+          {commits}
+
+          ❤
+        draft: false
+        prerelease: true
+
+    - name: Trigger Deployment Workflow
+      if: success()
+      id: trigger_deploy
+      run: |
+        curl -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${{ secrets.SAMSUL_REPO_TOKEN }}" \
+            --request POST \
+            --data '{"event_type": "deployment", "client_payload": {"release_tag": "${{ github.event.inputs.tags }}"}}' \
+            https://api.github.com/repos/${{ github.repository }}/dispatches

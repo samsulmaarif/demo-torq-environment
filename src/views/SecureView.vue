@@ -9,7 +9,7 @@
 
 <script>
     export default {
-        name: 'Secure',
+        name: 'SecureView',
         data() {
             return {};
         }
