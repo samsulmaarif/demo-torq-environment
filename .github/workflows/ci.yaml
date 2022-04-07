@@ -4,14 +4,57 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches:
+  #     - develop
+  #   tags:
+  #     - 'v*'
   pull_request:
-    branches: [ main ]
+    branches:
+      - develop
+      - main
+  # workflow_dispatch:
+  #   inputs:
+  #     deploy:
+  #       description: 'Execute the build?'
+  #       required: true
+  #       default: 'yes'
+      # tags:
+      #   description: "Tag to be deploy"
+      #   required: true
+      #   type: string
 
 jobs:
-  build:
+  dev:
+    name: Build on branch develop
+    environment: development
+    if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+    - name: Cache node_modules
+      uses: actions/cache@v2
+      id: node-modules-cache
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-node-modules
+        restore-keys: ${{ runner.os }}-node-modules
+    - name: Run the test
+      run: |
+        echo "Development Demo Only"
+        echo -e "{\n  \"environmentKey\"\: \"${{ github.ref_name }}\"\n}"
 
+  staging:
+    name: Build on branch staging
+    environment: staging
+    needs: [dev]
+    if: ${{ github.event_name == 'push' && github.ref_name == 'staging' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -32,6 +75,29 @@ jobs:
 
     - name: Run the test
       run: |
-        npm ci
-        npm run build --if-present
-        npm run lint
+        echo "Staging"
+
+
+  release:
+    name: Build only on tags
+    if: ${{ github.ref_type == 'tag' && github.ref_name == 'v*' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+
+  pr_only:
+    name: Build only on pull_request
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'

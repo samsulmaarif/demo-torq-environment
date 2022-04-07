@@ -1,0 +1,80 @@
+name: Deployment
+
+on:
+  repository_dispatch:
+    types: [deployment]
+
+jobs:
+  test:
+    name: Deploy to develop
+    environment: development
+    #if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+    - name: Run the test
+      run: |
+        echo -e "{\n  \"environmentKey\"\: \"${{ github.ref_name }}\"\n}"
+
+  dev:
+    name: Deploy to develop
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+    - name: Run the test
+      run: |
+        echo -e "{\n  \"environmentKey\"\: \"${{ github.ref_name }}\"\n}"
+
+  staging:
+    name: Deploy to staging
+    environment: staging
+    needs: [dev, test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+
+    - name: Run the test
+      run: |
+        echo "Deploy to Staging"
+
+  prod:
+    name: Deploy to Production
+    environment: production
+    needs: [dev]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+
+    - name: Cache node_modules
+      uses: actions/cache@v2
+      id: node-modules-cache
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-node-modules
+        restore-keys: ${{ runner.os }}-node-modules
+
+    - name: Run the test
+      run: |
+        echo "Deploy to Prod"
