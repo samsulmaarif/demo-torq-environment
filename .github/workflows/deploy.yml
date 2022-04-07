@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Deploy to develop
+    name: Run Test on Develop
     environment: development
     #if: ${{ github.event_name == 'push' && github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
   prod:
     name: Deploy to Production
     environment: production
-    needs: [dev]
+    needs: [staging]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
